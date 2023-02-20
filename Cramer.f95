@@ -14,9 +14,8 @@ program CramersRule
     implicit none
     
     ! Declare varialble
-    integer :: n, row, col, i
+    integer :: n, row, col
     real, allocatable :: Matrix1(:,:), b(:), x(:)
-    real :: detA, detM, determinant
     logical :: Success
     
     ! Open the input and output files.
@@ -63,40 +62,83 @@ program CramersRule
  end program CramersRule
  
  subroutine Cramer(M, b, n, x, Success)
- 
-    ! This subroutine does Cramer's Rule
-    
-    
-    ! Declare and initialize your variables first.
- 
+
+   ! This subroutine does Cramer's Rule
+   ! Declare and initialize your variables first.
+   implicit none
+   
+   real :: M(n,n), b(n), x(n), detM, detW, Determinant
+   real, allocatable :: workM(:,:)
+   integer :: n, i
+   logical :: Success
        
-    ! Find the determinant of M first. print it to screen.
-    ! If it is zero, set the Success logical variable and quit.
- 
+   ! Set logic flags.
+   Success = .true.
+
+   ! Find the determinant of M first. print it to screen.
+   detM = Determinant(M, n)
+   print*, 'the determinant is ', detM
+
+   ! If it is zero, set the Success logical variable and quit.
+   if ( detM == 0.0 ) then
+      Success = .false.
+      RETURN
+   end if 
+
+   ! Allocate memory for a working matrix for column substituion. 
+   allocate(workM(n,n))
+   
+   ! Then, for each column, i, substitute column i with vector b and get 
+   ! that determinant. Compute the ith solution.
+
+   do i = 1, n
+      workM = M
+      call ColumnInsert(workM, b, n, i, workM)
+      detW = Determinant(workM, n)
+      x(i) = detW / detM
+   end do
        
-    ! Allocate memory for a working matrix for column substituion. Then, for each
-    ! column, i, substitute column i with vector b and get that determinant. 
-    ! Compute the ith solution.
- 
-       
-    ! deallocate memory for the working matrix.
-    
+   ! deallocate memory for the working matrix.
+   deallocate(workM)
        
  end subroutine Cramer
  
  subroutine ColumnInsert(M, b, n, col, MatOut)
- 
-    ! This subroutine takes vector b and inserts in into matrix M at column col.
-    ! Don't forget to set MatOut = M before you substitute the column in.
+
+   ! This subroutine takes vector b and inserts in into matrix M at column col.
+   ! Don't forget to set MatOut = M before you substitute the column in.
+
+   real :: M(n, n), MatOut(n, n), b(n)
+   integer :: i, n, col
+
+   MatOut = M
+   do i = 1, n
+      MatOut(i, col) = b(i)
+   enddo
+
        
  
  end subroutine ColumnInsert
  
  function Determinant(M, n) result(Det)
  
-    ! This function computes the determinant of matices of size 2 or 3. This
-    ! should just be an if...else....endif. One is the formula for a 2x2
-    ! and the other is the formula for the 3x3 determinant.
+   ! Clear the memory for the variables
+   implicit none
+ 
+   ! Define the variable types
+   real :: Det
+   integer :: n
+   real :: M(n,n)
+
+   ! Perform determinant for 2x2 matrix.
+   if ( n == 2 ) then
+      Det = (M(1,1) * M(2,2)) - (M(1,2) * M(2,1))
+   
+   ! Perform determinant for 3x3 matrix.
+   else if ( n == 3 ) then
+      Det = (M(1,1) * M(2,2) * M(3,3)) + (M(1,2) * M(2,3) * M(3,1)) + (M(1,3) * M(2,1) * M(3,2)) &
+      - (M(1,3) * M(2,2) * M(3,1)) - (M(1,2) * M(2,1) * M(3,3)) - (M(1,1) * M(2,3) * M(3,2))
+   end if
        
  
  end function Determinant
