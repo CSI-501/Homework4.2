@@ -67,7 +67,7 @@ program CramersRule
    ! Declare and initialize your variables first.
    implicit none
    
-   real :: M(n,n), b(n), x(n), detM, detW, Determinant
+   real :: M(n,n), b(n), x(n), detM, detW, determinant
    real, allocatable :: workM(:,:)
    integer :: n, i
    logical :: Success
@@ -76,7 +76,7 @@ program CramersRule
    Success = .true.
 
    ! Find the determinant of M first. print it to screen.
-   detM = Determinant(M, n)
+   detM = determinant(M, n)
    print*, 'the determinant is ', detM
 
    ! If it is zero, set the Success logical variable and quit.
@@ -94,7 +94,7 @@ program CramersRule
    do i = 1, n
       workM = M
       call ColumnInsert(workM, b, n, i, workM)
-      detW = Determinant(workM, n)
+      detW = determinant(workM, n)
       x(i) = detW / detM
    end do
        
@@ -120,7 +120,7 @@ program CramersRule
  
  end subroutine ColumnInsert
  
- function Determinant(M, n) result(Det)
+ function determinant(M, n) result(Det)
  
    ! Clear the memory for the variables
    implicit none
@@ -141,4 +141,4 @@ program CramersRule
    end if
        
  
- end function Determinant
+ end function determinant
